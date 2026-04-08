@@ -1,74 +1,50 @@
 const express = require("express");
+const multer = require("multer");
+const axios = require("axios");
+const fs = require("fs");
+const pdfParse = require("pdf-parse");
+
 const app = express();
 
-app.use(express.json());
+const upload = multer({ dest: "uploads/" });
 
-const skillsList = [
-  "React",
-  "Node.js",
-  "MongoDB",
-  "Express",
-  "JavaScript",
-  "API",
-  "SQL",
-  "Git"
-];
-
-app.post("/analyze", (req, res) => {
+app.post("/upload", upload.single("resume"), async (req, res) => {
   try {
-    const { text } = req.body;
-
-    if (!text) {
-      return res.status(400).json({
-        status: "error",
-        message: "No resume text provided"
-      });
+    if (!req.file) {
+      return res.status(400).json({ error: "No file uploaded" });
     }
 
-    const missingSkills = skillsList.filter(skill =>
-      !text.toLowerCase().includes(skill.toLowerCase())
-    );
+    const dataBuffer = fs.readFileSync(req.file.path);
 
-    const score = Math.max(0, 100 - missingSkills.length * 10);
+    // ✅ THIS WILL WORK NOW
+    const pdfData = await pdfParse(dataBuffer);
 
-    let suggestions = [];
+    const resumeText = pdfData.text;
 
-    if (missingSkills.includes("React")) {
-      suggestions.push("Add React projects");
-    }
+    console.log("Extracted:", resumeText.substring(0, 200));
 
-    if (missingSkills.includes("Node.js")) {
-      suggestions.push("Add backend experience");
-    }
-
-    if (missingSkills.includes("API")) {
-      suggestions.push("Mention API work");
-    }
-
-    if (missingSkills.length > 4) {
-      suggestions.push("Add more relevant skills");
-    }
-
-    res.json({
-      status: "success",
-      message: "Resume analyzed successfully",
-      data: {
-        score,
-        missingSkills,
-        suggestions
-      }
+    const response = await axios.post("http://localhost:3004/analyze", {
+      text: resumeText
     });
 
-    console.log("Analysis completed:", { score, missingSkills });
+    fs.unlinkSync(req.file.path);
+
+    res.json({
+      message: "Resume uploaded + analyzed",
+      fileName: req.file.originalname,
+      analysis: response.data
+    });
 
   } catch (error) {
+    console.log("❌ Resume Error:", error.message);
+
     res.status(500).json({
-      status: "error",
-      message: "Internal server error"
+      error: "Error processing resume",
+      details: error.message
     });
   }
 });
 
-app.listen(3004, () => {
-  console.log("Analysis service running on 3004");
+app.listen(3003, () => {
+  console.log("Resume service running on 3003");
 });

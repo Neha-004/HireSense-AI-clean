@@ -19,24 +19,26 @@ app.post("/analyze", (req, res) => {
   try {
     const { text } = req.body;
 
-    // 🔴 Error handling
-    if (!text) {
+    // 🔴 Validation
+    if (!text || text.trim() === "") {
       return res.status(400).json({
         status: "error",
         message: "No resume text provided"
       });
     }
 
+    const lowerText = text.toLowerCase();
+
     // 🔍 Find missing skills
-    const missingSkills = skillsList.filter(skill =>
-      !text.toLowerCase().includes(skill.toLowerCase())
+    const missingSkills = skillsList.filter(
+      skill => !lowerText.includes(skill.toLowerCase())
     );
 
     // 📊 Calculate ATS score
     const score = Math.max(0, 100 - missingSkills.length * 10);
 
     // 💡 Suggestions
-    let suggestions = [];
+    const suggestions = [];
 
     if (missingSkills.includes("React")) {
       suggestions.push("Add React projects to your resume");
@@ -54,29 +56,30 @@ app.post("/analyze", (req, res) => {
       suggestions.push("Try adding more technical skills relevant to your role");
     }
 
-    // 📦 Final response
-    res.json({
-      status: "success",
-      message: "Resume analyzed successfully",
-      data: {
-        score,
-        missingSkills,
-        suggestions
-      }
-    });
-
-    // 🧠 Logs (for debugging / interview explanation)
-    console.log("Analysis completed:", {
+    // 📦 Final response (CLEAN STRUCTURE)
+    const result = {
       score,
-      missingSkills
-    });
+      missingSkills,
+      suggestions
+    };
+
+    console.log("✅ Analysis completed:", result);
+
+    res.json(result);
 
   } catch (error) {
+    console.error("❌ Analysis error:", error.message);
+
     res.status(500).json({
       status: "error",
       message: "Internal server error"
     });
   }
+});
+
+// Health check (useful for testing)
+app.get("/", (req, res) => {
+  res.send("Analysis Service is running 🚀");
 });
 
 app.listen(3004, () => {

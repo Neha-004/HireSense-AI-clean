@@ -6,25 +6,29 @@ const app = express();
 // Auth
 app.use("/auth", createProxyMiddleware({
   target: "http://localhost:3001",
-  changeOrigin: true
+  changeOrigin: true,
+  pathRewrite: { "^/auth": "" }
 }));
 
 // User
 app.use("/user", createProxyMiddleware({
   target: "http://localhost:3002",
-  changeOrigin: true
+  changeOrigin: true,
+  pathRewrite: { "^/user": "" }
 }));
 
 // Resume
 app.use("/resume", createProxyMiddleware({
   target: "http://localhost:3003",
-  changeOrigin: true
+  changeOrigin: true,
+  pathRewrite: { "^/resume": "" }
 }));
 
 // Analysis
 app.use("/analysis", createProxyMiddleware({
   target: "http://localhost:3004",
-  changeOrigin: true
+  changeOrigin: true,
+  pathRewrite: { "^/analysis": "" }
 }));
 
 app.get("/", (req, res) => {
