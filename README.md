@@ -1,235 +1,105 @@
-# HireSense-AI-clean
+# HireSense AI 🤖
 
-AI-powered recruitment platform built using Node.js, Express.js, MongoDB, and microservices architecture. The system is designed to streamline hiring workflows through resume analysis, authentication services, and scalable backend modules.
+An AI-powered recruitment platform built with a **microservices architecture** using Node.js.
+It automates resume analysis, candidate matching, and recruitment workflows
+through 5 independent, loosely-coupled services.
 
----
+## Architecture Overview
 
-## Features
+```
+Client Request
+      ↓
+ [API Gateway]  ← single entry point, routes all traffic
+      ↓
+ ┌────────────────────────────────────────┐
+ │  [Auth Service]   → JWT authentication │
+ │  [Resume Service] → resume parsing     │
+ │  [Analysis Service] → AI scoring       │
+ │  [User Service]   → user management    │
+ └────────────────────────────────────────┘
+      ↓
+  [MongoDB]
+```
 
-* Authentication & Authorization
-* API Gateway Architecture
-* Resume Analysis Workflow
-* User Management System
-* RESTful API Development
-* Scalable Microservices Structure
-* Backend Service Communication
+## Services
 
----
+| Service | Port | Responsibility |
+|---------|------|----------------|
+| api-gateway | 3000 | Routes requests to correct service |
+| auth-service | 3001 | Registration, login, JWT issuance |
+| resume-service | 3002 | Resume upload and parsing |
+| analysis-service | 3003 | AI-powered resume scoring |
+| user-service | 3004 | User profile management |
 
 ## Tech Stack
 
-### Backend
+- **Runtime:** Node.js
+- **Framework:** Express.js
+- **Database:** MongoDB
+- **Auth:** JWT (JSON Web Tokens)
+- **Architecture:** Microservices with REST API communication
+- **Language:** JavaScript (ES6+)
 
-* Node.js
-* Express.js
-* REST APIs
-* JWT Authentication
+## Key Features
 
-### Database
+- 🔐 Secure JWT authentication with token verification across services
+- 📄 Resume upload and structured data extraction
+- 🤖 AI-powered candidate analysis and scoring
+- 🌐 Centralised API Gateway handling routing and load distribution
+- 👤 Independent user management service
+- 🔒 Each service is independently deployable and scalable
 
-* MongoDB
+## Getting Started
 
-### Architecture
-
-* Microservices
-* API Gateway Pattern
-
-### Tools
-
-* Git & GitHub
-* Postman
-* VS Code
-
----
-
-## Project Structure
-
-```bash id="8br9pd"
-HireSense-AI-clean/
-│
-├── api-gateway
-├── auth-service
-├── user-service
-├── resume-service
-├── analysis-service
-```
-
----
-
-## System Modules
-
-### API Gateway
-
-Handles request routing between services.
-
-### Auth Service
-
-Manages user authentication and authorization.
-
-### User Service
-
-Handles user-related operations and profile management.
-
-### Resume Service
-
-Processes resume-related workflows and management.
-
-### Analysis Service
-
-Supports AI-based analysis and evaluation workflows.
-
----
-
-## Installation
-
-```bash id="xk4n7v"
+```bash
+# Clone the repo
 git clone https://github.com/Neha-004/HireSense-AI-clean.git
 cd HireSense-AI-clean
+
+# Install dependencies for each service
+cd api-gateway && npm install && cd ..
+cd auth-service && npm install && cd ..
+cd resume-service && npm install && cd ..
+cd analysis-service && npm install && cd ..
+cd user-service && npm install && cd ..
+
+# Set up environment variables
+# Create .env file in each service with:
+# PORT=300X
+# MONGODB_URI=your_mongodb_uri
+# JWT_SECRET=your_secret_key
+
+# Run each service in a separate terminal
+cd api-gateway && npm start
+cd auth-service && npm start
+cd resume-service && npm start
+cd analysis-service && npm start
+cd user-service && npm start
 ```
 
-Install dependencies for each service:
+## API Endpoints
 
-```bash id="o2j5qe"
-npm install
+All requests go through the API Gateway at `http://localhost:3000`
+
+```
+POST   /auth/register     → Register new user
+POST   /auth/login        → Login, returns JWT
+POST   /resume/upload     → Upload and parse resume
+GET    /analysis/:id      → Get AI analysis for a resume
+GET    /user/profile      → Get user profile (auth required)
+PUT    /user/profile      → Update user profile (auth required)
 ```
 
-Run the services:
+## Why Microservices?
 
-```bash id="ff7u3k"
-npm start
-```
-
----
-
-## Future Improvements
-
-* Docker containerization
-* Deployment pipeline
-* AI scoring optimization
-* Notification system
-* Admin dashboard
-
----
+Each service can be:
+- **Scaled independently** based on load
+- **Deployed separately** without affecting other services
+- **Maintained by different teams** in a production environment
+- **Tested in isolation** for better reliability
 
 ## Author
 
-Neha Tomar
-
-GitHub: # HireSense-AI-clean
-
-AI-powered recruitment platform built using Node.js, Express.js, MongoDB, and microservices architecture. The system is designed to streamline hiring workflows through resume analysis, authentication services, and scalable backend modules.
-
----
-
-## Features
-
-* Authentication & Authorization
-* API Gateway Architecture
-* Resume Analysis Workflow
-* User Management System
-* RESTful API Development
-* Scalable Microservices Structure
-* Backend Service Communication
-
----
-
-## Tech Stack
-
-### Backend
-
-* Node.js
-* Express.js
-* REST APIs
-* JWT Authentication
-
-### Database
-
-* MongoDB
-
-### Architecture
-
-* Microservices
-* API Gateway Pattern
-
-### Tools
-
-* Git & GitHub
-* Postman
-* VS Code
-
----
-
-## Project Structure
-
-```bash id="8br9pd"
-HireSense-AI-clean/
-│
-├── api-gateway
-├── auth-service
-├── user-service
-├── resume-service
-├── analysis-service
-```
-
----
-
-## System Modules
-
-### API Gateway
-
-Handles request routing between services.
-
-### Auth Service
-
-Manages user authentication and authorization.
-
-### User Service
-
-Handles user-related operations and profile management.
-
-### Resume Service
-
-Processes resume-related workflows and management.
-
-### Analysis Service
-
-Supports AI-based analysis and evaluation workflows.
-
----
-
-## Installation
-
-```bash id="xk4n7v"
-git clone https://github.com/Neha-004/HireSense-AI-clean.git
-cd HireSense-AI-clean
-```
-
-Install dependencies for each service:
-
-```bash id="o2j5qe"
-npm install
-```
-
-Run the services:
-
-```bash id="ff7u3k"
-npm start
-```
-
----
-
-## Future Improvements
-
-* Docker containerization
-* Deployment pipeline
-* AI scoring optimization
-* Notification system
-* Admin dashboard
-
----
-
-## Author
-
-Neha Tomar
-
-GitHub:https://github.com/Neha-004/HireSense-AI-clean
+**Neha Tomar** — Full Stack Developer (MERN) | AI Integration
+- GitHub: [@Neha-004](https://github.com/Neha-004)
+- LinkedIn: [linkedin.com/in/neha-tomar-580146224](https://linkedin.com/in/neha-tomar-580146224)
